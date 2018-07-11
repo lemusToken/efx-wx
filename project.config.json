@@ -45,12 +45,6 @@
 					"name": "index",
 					"pathName": "pages/index/index",
 					"query": "name=a"
-				},
-				{
-					"id": 2,
-					"name": "redirect",
-					"pathName": "pages/redirect/redirect",
-					"query": "q=https://test.chemao.com/jjr?pp%3d%7b%22path%22%3a%22https%3a%2f%2fwww.baidu.com%22%7d"
 				}
 			]
 		}
