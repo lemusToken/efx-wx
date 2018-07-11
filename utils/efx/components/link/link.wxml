@@ -1,0 +1,3 @@
+<view class="link link-{{blockType}}" style="height:{{height}};width:{{width}}" catchtap="go">
+  <slot></slot>
+</view>

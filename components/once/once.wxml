@@ -1,0 +1,4 @@
+<!--components/once.wxml-->
+<once_efx name="{{name}}">
+  <slot></slot>
+</once_efx>

@@ -1,0 +1,2 @@
+<import src="../../utils/efx/app/pages/web/web.wxml" />
+<template is="web" data="{{src: src}}"/>

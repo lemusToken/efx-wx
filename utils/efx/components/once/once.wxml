@@ -1,0 +1,3 @@
+<view wx:if="{{num===1}}">
+  <slot></slot>
+</view>

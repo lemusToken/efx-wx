@@ -1,0 +1,10 @@
+.link {
+}
+
+.link.link-inline {
+  display: inline-block;
+}
+
+.link.link-block {
+  display: block;
+}

@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "once_efx": "../../utils/efx/app/components/once/once"
+  }
+}
