@@ -3,13 +3,19 @@ import Config from '../config/config.js'
 import * as ConfigAll from '../../../configs/index.js'
 import Sys from './sys.js'
 import Version from '../config/version.js'
+import Use from '../../efx/app/plugins/use.js'
+import WxStoreBind from '../../efx/store/connect/wx.js'
 
 const AppConfig = ConfigAll.app
 const APPID = Math.random() * 1000000 | 0
 const VERSION = AppConfig.VERSION
+const PAGE_EVENT_PREV = 'page/on'
 const ENV_PROD = 'production'
 const ENV_DEV = 'development'
-const map = [
+const mapApp = [
+  'onLaunch', 'onShow', 'onHide', 'onError', 'onPageNotFound'
+]
+const mapPage = [
   'onLoad', 'onReady', 'onShow', 'onHide', 'onUnload', 'onPullDownRefresh',
   'onReachBottom', 'onShareAppMessage', 'onPageScroll', 'onTabItemTap'
 ]
@@ -40,35 +46,47 @@ function createConfig (config) {
   }
 }
 
-export default (data={}) => {
-  let launch = data.onLaunch
-  data.onLaunch = function (...params) {
-    if (typeof launch === 'function') {
-      launch.apply(this, params)
-    }
+Event.on('app/onLaunch', function () {
+  Version.setCurrent(VERSION)
+  if (this.Store) {
     Sys.define('$STORE', this.Store)
-    Version.setCurrent(VERSION)
-    if (this.Store) {
-      const Store = this.Store
-      //  绑定store，监听getter
-      Event.on('page/onLoad', function () {
-        this.$Store = Store
-        const getters = this.storeGetters
-        if (getters) {
-          Store.bindGetters((name, val) => {
-            this.setData({
-              [name]: typeof val === 'undefined' ? '' : val
-            })
-          }, getters, this.route)
-        }
-      })
-    }
-    //  监听页面事件
-    for (let v of map) {
-      if (!this.page || !this.page[v]) continue
-      Event.on(`page/${v}`, this.page[v])
+    const Store = this.Store
+    //  绑定store，监听getter
+    Event.on('page/onLoad', function () {
+      this.$Store = Store
+      WxStoreBind(Store, this)
+    })
+  }
+  //  监听页面事件
+  for (let v of mapPage) {
+    if (!this.page || !this.page[v]) continue
+    Event.on(`page/${v}`, this.page[v])
+  }
+})
+
+const appLaunch = (data = {}) => {
+  for (let v of mapApp) {
+    if (!data[v]) continue
+    Event.on(`app/${v}`, data[v])
+    data[v] = null
+  }
+  //  添加扩展
+  data = Use.extend(data)
+  for (let v of Object.keys(data)) {
+    if (v.indexOf('on') === 0) {
+      if (typeof data[v] === 'function') {
+        Event.on(`app/mixin/${v}`, data[v])
+      }
+      data[v] = function (...params) {
+        Event.emitWith(this, `app/${v}`, ...params)
+        Event.emitWith(this, `app/mixin/${v}`, ...params)
+      }
     }
   }
   data.globalData = data.globalData || {}
   App(data)
 }
+
+appLaunch.use = Use.add
+
+export default appLaunch

@@ -5,6 +5,7 @@ Page({
     open: ''
   },
   onLoad () {
+    console.log('page onLoad')
     this.$Store.dispatch('box/open')
     console.log(this.data.open)
   },

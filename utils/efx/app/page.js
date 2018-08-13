@@ -9,11 +9,12 @@ const PageContainer = function (data, run = true) {
   if (!data.onLoad) {
     data.onLoad = () => { }
   }
-  for (let v in data) {
+  for (let v of Object.keys(data)) {
     if (v.indexOf('on') > -1 && typeof data[v] === 'function') {
       let fn = data[v]
       data[v] = (...params) => {
         const page = Sys.get('getCurrentPage')
+        
         Event.emitWith(page, 'page/' + v, ...params)
         fn.apply(page, params)
       }
